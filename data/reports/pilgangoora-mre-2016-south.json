@@ -1,0 +1,60 @@
+{
+  "report_id": "pilgangoora-mre-2016-south",
+  "company": "Pilbara Minerals Limited",
+  "ticker": "ASX:PLS",
+  "project": "Pilgangoora South (historical, ex-Altura Mining)",
+  "commodity": "lithium",
+  "reporting_standard": "JORC 2012",
+  "title": "Pilgangoora Mineral Resource Estimate",
+  "effective_date": "2016-02-29",
+  "published_date": "2016-02-29",
+  "source_url": "https://media.abnnewswire.net/media/en/docs/80928-ASX-AJM-733384.pdf",
+  "data_origin": "reconstructed_from_public_disclosure",
+  "note": "Pilbara Minerals 按 JORC 披露，不发布 NI 43-101 技术报告。",
+  "fixtures": {
+    "pdf": "data/reports/pdfs/pilgangoora_mre_2016_south.pdf",
+    "pdf_url_alias": "fixture://pilgangoora-mre-2016-south"
+  },
+  "ground_truth": {
+    "description": "本题只对 Indicated Resources 与 Inferred Resources 两类的矿石量 / 品位 / 金属量计分；Measured、(M)+(I)、Total 行不计分。",
+    "tolerance": "±5%（相对误差）",
+    "rows": [
+      {
+        "category": "Indicated",
+        "commodity": "lithium",
+        "ore_tonnage": {
+          "value": 26.7,
+          "unit": "Mt",
+          "value_mt": 26.7
+        },
+        "grade": {
+          "value": 1.05,
+          "unit": "% Li2O"
+        },
+        "contained_metal": {
+          "value": 280000,
+          "unit": "t Li2O",
+          "value_t": 280000.0
+        }
+      },
+      {
+        "category": "Inferred",
+        "commodity": "lithium",
+        "ore_tonnage": {
+          "value": 9.0,
+          "unit": "Mt",
+          "value_mt": 9.0
+        },
+        "grade": {
+          "value": 1.02,
+          "unit": "% Li2O"
+        },
+        "contained_metal": {
+          "value": 92000,
+          "unit": "t Li2O",
+          "value_t": 92000.0
+        }
+      }
+    ]
+  }
+}

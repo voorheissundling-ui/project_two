@@ -1,0 +1,57 @@
+{
+  "report_id": "newmont-gold-resources-2025",
+  "company": "Newmont Corporation",
+  "ticker": "NYSE:NEM",
+  "project": "Consolidated (all operations)",
+  "commodity": "gold",
+  "reporting_standard": "NI 43-101",
+  "title": "2025 Mineral Resources Statement - Gold Resources",
+  "effective_date": "2025-12-31",
+  "published_date": "2026-02-19",
+  "source_url": "https://www.businesswire.com/news/home/20260219894602/en/",
+  "data_origin": "reconstructed_from_public_disclosure",
+  "fixtures": {
+    "pdf": "data/reports/pdfs/newmont_gold_resources_2025.pdf",
+    "pdf_url_alias": "fixture://newmont-gold-resources-2025"
+  },
+  "ground_truth": {
+    "description": "本题只对 Indicated Resources 与 Inferred Resources 两类的矿石量 / 品位 / 金属量计分；Measured、(M)+(I)、Total 行不计分。",
+    "tolerance": "±5%（相对误差）",
+    "rows": [
+      {
+        "category": "Indicated",
+        "ore_tonnage": {
+          "value": 4717000,
+          "unit": "kt",
+          "value_mt": 4717.0
+        },
+        "grade": {
+          "value": 0.59,
+          "unit": "g/t Au"
+        },
+        "contained_metal": {
+          "value": 90100,
+          "unit": "koz",
+          "value_oz": 90100000.0
+        }
+      },
+      {
+        "category": "Inferred",
+        "ore_tonnage": {
+          "value": 3967800,
+          "unit": "kt",
+          "value_mt": 3967.8
+        },
+        "grade": {
+          "value": 0.6,
+          "unit": "g/t Au"
+        },
+        "contained_metal": {
+          "value": 70600,
+          "unit": "koz",
+          "value_oz": 70600000.0
+        }
+      }
+    ]
+  }
+}

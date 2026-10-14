@@ -1,0 +1,95 @@
+{
+  "report_id": "barrick-mineral-resources-2024",
+  "company": "Barrick Gold Corporation",
+  "ticker": "NYSE:GOLD",
+  "project": "Consolidated (all operations)",
+  "commodity": "gold,copper",
+  "reporting_standard": "NI 43-101",
+  "title": "Mineral Resources as at December 31, 2024",
+  "effective_date": "2024-12-31",
+  "published_date": "2025-02-06",
+  "source_url": "https://s25.q4cdn.com/322814910/files/doc_financial/annual_reports/2024/Barrick_Annual_Report_2024.pdf",
+  "data_origin": "reconstructed_from_public_disclosure",
+  "fixtures": {
+    "pdf": "data/reports/pdfs/barrick_mineral_resources_2024.pdf",
+    "pdf_url_alias": "fixture://barrick-mineral-resources-2024"
+  },
+  "ground_truth": {
+    "description": "本题只对 Indicated Resources 与 Inferred Resources 两类的矿石量 / 品位 / 金属量计分；Measured、(M)+(I)、Total 行不计分。",
+    "tolerance": "±5%（相对误差）",
+    "rows": [
+      {
+        "category": "Indicated",
+        "commodity": "gold",
+        "ore_tonnage": {
+          "value": 4800,
+          "unit": "Mt",
+          "value_mt": 4800.0
+        },
+        "grade": {
+          "value": 1.01,
+          "unit": "g/t Au"
+        },
+        "contained_metal": {
+          "value": 150.0,
+          "unit": "Moz",
+          "value_oz": 150000000.0
+        }
+      },
+      {
+        "category": "Inferred",
+        "commodity": "gold",
+        "ore_tonnage": {
+          "value": 1400,
+          "unit": "Mt",
+          "value_mt": 1400.0
+        },
+        "grade": {
+          "value": 0.9,
+          "unit": "g/t Au"
+        },
+        "contained_metal": {
+          "value": 41.0,
+          "unit": "Moz",
+          "value_oz": 41000000.0
+        }
+      },
+      {
+        "category": "Indicated",
+        "commodity": "copper",
+        "ore_tonnage": {
+          "value": 5400,
+          "unit": "Mt",
+          "value_mt": 5400.0
+        },
+        "grade": {
+          "value": 0.39,
+          "unit": "% Cu"
+        },
+        "contained_metal": {
+          "value": 22.0,
+          "unit": "Mt",
+          "value_t": 22000000.0
+        }
+      },
+      {
+        "category": "Inferred",
+        "commodity": "copper",
+        "ore_tonnage": {
+          "value": 1300,
+          "unit": "Mt",
+          "value_mt": 1300.0
+        },
+        "grade": {
+          "value": 0.3,
+          "unit": "% Cu"
+        },
+        "contained_metal": {
+          "value": 3.9,
+          "unit": "Mt",
+          "value_t": 3900000.0
+        }
+      }
+    ]
+  }
+}

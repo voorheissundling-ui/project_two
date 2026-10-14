@@ -1,0 +1,59 @@
+{
+  "_comment": [
+    "把 mcpServers 这一段整体粘进 Claude Desktop 的 claude_desktop_config.json，",
+    "或 Cursor 的 .cursor/mcp.json，即可在对话里直接调用这三个 server（不需要 Agent 客户端）。",
+    "",
+    "⚠️ 使用前只需改一处：把三个 args 里的 --directory 换成你自己的仓库绝对路径。",
+    "   Windows 路径请用正斜杠（D:/project/xxx），JSON 里反斜杠需要转义成 \\\\。",
+    "",
+    "验证方式：重启 Claude Desktop，对话框右下角应出现工具图标，",
+    "然后问它「用 mining-news-mcp 搜一下 Pilbara 锂矿最近的新闻」。"
+  ],
+  "mcpServers": {
+    "mining-news-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "D:/project/毕业项目/面试题",
+        "python",
+        "-m",
+        "mining_daily.servers.news_server"
+      ],
+      "env": {
+        "MINING_DAILY_MODE": "fixture",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "mineral-pdf-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "D:/project/毕业项目/面试题",
+        "python",
+        "-m",
+        "mining_daily.servers.pdf_server"
+      ],
+      "env": {
+        "MINING_DAILY_MODE": "fixture",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "lme-price-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "D:/project/毕业项目/面试题",
+        "python",
+        "-m",
+        "mining_daily.servers.price_server"
+      ],
+      "env": {
+        "MINING_DAILY_MODE": "fixture",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

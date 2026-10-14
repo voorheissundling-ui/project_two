@@ -1,0 +1,505 @@
+"""生成 `data/news/news.json` —— 矿业新闻 fixture。
+
+诚实性（重要，别把这段删了）：
+每条记录的 **title / url / source / published_at / source_verified 都是真实抓取结果**
+（见 `data/_sources/news_research_2026-10-14.md`，其中标 ✅ 的条目在本机实测返回 HTTP 200
+并提取到了真实标题与发布时间）。
+
+而 `summary_zh` 和 `body` 是**对公开报道事实的中文改写**，不是原文转载 —— 一方面有版权问题，
+另一方面我们要的是结构化字段而不是转载站。这一点写在 `_meta` 里，下游可随时核验。
+
+用法：
+    uv run python scripts/build_news_fixtures.py
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+OUT_DIR = REPO_ROOT / "data" / "news"
+
+# source_verified: "http_200" = 本机实测拿到过真实标题/时间；"search_only" = 来源真实但被反爬拦截未能实测
+NEWS = [
+    {
+        "id": "news-2026-08-26-pls-fy26-profit",
+        "title": "Lithium Prices Up 92% Year Over Year as PLS Group Posts A$526M Profit",
+        "url": "https://carboncredits.com/lithium-prices-up-92-year-over-year-as-pls-group-posts-a526m-profit/",
+        "source": "Carbon Credits",
+        "published_at": "2026-08-26T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS Group 公布 FY26 全年净利 A$5.26 亿，扭转上一年 A$1.96 亿亏损，营收 A$19.34 亿、同比 +152%，EBITDA 约 A$11.37 亿。全年锂辉石产量 87.95 万吨（+17%）、销量 89.16 万吨，实现均价约 US$2,164/t（SC5.2 口径），较上一年翻倍以上。公司将业绩归因于锂价同比上涨约 92%。",
+        "body": (
+            "PLS Group（原 Pilbara Minerals）披露 FY26 全年业绩：税后净利润 A$5.26 亿，"
+            "而上一财年同期为亏损 A$1.96 亿；营业收入 A$19.34 亿，同比增长 152%；"
+            "EBITDA 约 A$11.37 亿。运营端全年生产锂辉石精矿 87.95 万吨（同比 +17%），"
+            "销售 89.16 万吨，实现均价约 US$2,164/吨（SC5.2 基准），较上一财年水平翻倍以上。"
+            "公司把这一轮改善主要归因于锂价同比上涨约 92%，叠加 Pilgangoora 完成 P1000 扩产后的产能释放。"
+            "对下游而言，这意味着澳矿在 2026 年的议价能力明显修复。"
+        ),
+        "entities": {
+            "companies": ["PLS Group", "Pilbara Minerals"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["earnings", "price"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-08-24-pls-dividend",
+        "title": "PLS reinstates dividend after lithium production hits record",
+        "url": "https://www.afr.com/companies/mining/pls-reinstates-dividend-after-lithium-production-hits-record-20260824-p60qvn",
+        "source": "Australian Financial Review",
+        "published_at": "2026-08-24T00:00:00Z",
+        "source_verified": "search_only",
+        "summary_zh": "PLS 在停发分红三年后恢复派息，宣派每股 5 澳分全额抵税（franked）末期股息，合计约 A$1.61 亿。背景是产量创纪录与基础盈利约 11 倍增长，管理层表示可在推进 P2000 扩产、重启 Ngungaju、推进巴西 Colina 项目的同时回报股东。",
+        "body": (
+            "在停产三年之后，PLS 宣布恢复分红，末期股息为每股 5 澳分、全额抵税（franked），"
+            "合计派发约 A$1.61 亿。管理层把这一决定建立在创纪录的产量和约 11 倍增长的基础盈利之上，"
+            "并强调公司有能力在三条资本开支线同时推进的情况下回报股东：P2000 扩产可行性研究、"
+            "Ngungaju 选厂重启，以及巴西 Colina 项目。恢复派息通常被市场解读为周期底部的确认信号。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Pilgangoora", "Ngungaju", "Colina"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU", "BR"],
+        "topics": ["capital_return", "earnings"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-07-30-pls-record-sales",
+        "title": "Pilbara Minerals posts record sales and robust growth guidance",
+        "url": "https://www.fool.com.au/2026/07/30/pilbara-minerals-posts-record-sales-and-robust-growth-guidance/",
+        "source": "The Motley Fool Australia",
+        "published_at": "2026-07-30T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "6 月季度（FY26 Q4）营收 A$7.43 亿（+31%），销量创纪录 24.99 万吨（+28%），实现均价 US$2,107/t（+13%）。产量 21.43 万吨、环比 -8%，受柴油价格与 Ngungaju 重启成本拖累。公司给出 FY27 产量指引 103–110 万吨、单位成本 A$575–625/t、资本开支 A$6.2–6.85 亿。",
+        "body": (
+            "PLS 公布 FY26 第四季度（6 月季度）经营数据：营收环比增长 31% 至 A$7.43 亿，"
+            "销量创下 24.99 万吨的季度纪录（同比 +28%），实现均价升至 US$2,107/吨（+13%）。"
+            "产量为 21.43 万吨，环比下降 8%，公司解释为柴油价格上涨及 Ngungaju 选厂重启带来的阶段性扰动。"
+            "管理层同时给出 FY27 指引：产量 103–110 万吨、单位成本 A$575–625/吨，资本开支 A$6.2–6.85 亿。"
+            "【风险提示】产量指引上限对应同比约 25% 的增量，执行风险集中在 Ngungaju 的爬产节奏。"
+        ),
+        "entities": {
+            "companies": ["Pilbara Minerals"],
+            "projects": ["Pilgangoora", "Ngungaju"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["production", "guidance", "earnings"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-07-07-catl-jianxiawo-permit",
+        "title": "China's lithium markets muted amid CATL securing mine safety permit",
+        "url": "https://www.spglobal.com/energy/en/news-research/latest-news/metals/070826-chinas-lithium-markets-muted-amid-catl-securing-mine-safety-permit",
+        "source": "S&P Global Commodity Insights",
+        "published_at": "2026-07-07T00:00:00Z",
+        "source_verified": "search_only",
+        "summary_zh": "宁德时代宜春枧下窝锂云母矿于 2026-06-29 取得安全生产许可（有效期至 2028-02-27），但中国锂市场反应平静，交易员认为复产利好已被 price in。该矿自 2025 年 8 月停产，曾占全球约 6% 供应，其复产节奏是 2026 年锂价的关键变量，直接牵动 PLS 等澳矿定价。",
+        "body": (
+            "S&P Global 报道，宁德时代位于江西宜春的枧下窝（Jianxiawo）锂云母矿已于 2026 年 6 月 29 日"
+            "取得安全生产许可证，有效期至 2028 年 2 月 27 日。市场本应把这视为供给回归的信号，"
+            "但中国锂盐市场反应平淡，交易员普遍认为复产预期早已被价格 price in。"
+            "该矿自 2025 年 8 月起停产，此前约占全球锂供应的 6%，其复产节奏被普遍视为 2026 年锂价最重要的单一变量，"
+            "也直接牵动 PLS 这类澳洲锂辉石生产商的定价能力。"
+        ),
+        "entities": {
+            "companies": ["CATL"],
+            "projects": ["Jianxiawo"],
+            "tickers": ["SZ:300750"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["CN"],
+        "topics": ["supply", "policy", "price"],
+        "sentiment": "neutral",
+    },
+    {
+        "id": "news-2026-06-16-ganfeng-sells-pls-stake",
+        "title": "赣锋锂业子公司出售 PLS 3509 万股，套现 2.22 亿澳元",
+        "url": "https://finance.eastmoney.com/a/202606163773292040.html",
+        "source": "东方财富 / 上海证券报",
+        "published_at": "2026-06-16T00:00:00Z",
+        "source_verified": "search_only",
+        "summary_zh": "赣锋锂业全资子公司赣锋国际通过大宗交易出售 PLS 约 3,509.3 万股，套现约 A$2.22 亿。交易后赣锋持股由约 4.36% 降至约 3.27%，预计累计税前收益约人民币 9.81 亿元。反映下游中国客户在锂价回升后对上游持股的减持套现。",
+        "body": (
+            "赣锋锂业公告，其全资子公司赣锋国际通过大宗交易出售 PLS（Pilbara Minerals）约 3,509.3 万股，"
+            "套现约 A$2.22 亿。本次交易后赣锋持股比例由约 4.36% 降至约 3.27%，"
+            "公司预计累计确认税前收益约人民币 9.81 亿元。这一减持发生在锂价自 2026 年初大幅回升之后，"
+            "反映下游中国锂盐厂在锂价高位对上游矿企持股的套现倾向，同时也提示中澳锂产业链的股权联系正在松动。"
+        ),
+        "entities": {
+            "companies": ["赣锋锂业", "Ganfeng Lithium", "Pilbara Minerals"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["SZ:002460", "ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["CN", "AU"],
+        "topics": ["equity", "offtake", "price"],
+        "sentiment": "neutral",
+    },
+    {
+        "id": "news-2026-04-24-pls-march-quarter",
+        "title": "PLS Group provides March quarter earnings update",
+        "url": "https://www.fool.com.au/2026/04/24/pls-group-provides-march-quarter-earnings-update/",
+        "source": "The Motley Fool Australia",
+        "published_at": "2026-04-24T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "3 月季度（FY26 Q3）营收环比 +52% 至 A$5.67 亿，产量 +12% 至 23.24 万吨，实现均价升至 US$1,867/t，FOB 单位成本降 11% 至 A$520/t，期末现金 A$14.5 亿（+52%）。Ngungaju 重启按计划推进，P2000 与巴西 Colina 可行性研究推进中。",
+        "body": (
+            "PLS 披露 3 月季度（FY26 Q3）业绩：营收环比增长 52% 至 A$5.67 亿，产量环比增长 12% 至 23.24 万吨，"
+            "实现均价升至 US$1,867/吨，FOB 单位成本下降 11% 至 A$520/吨，期末现金 A$14.5 亿（环比 +52%）。"
+            "公司在季报中确认 Ngungaju 选厂重启按计划推进，P2000 扩产与巴西 Colina 项目的可行性研究同步进行。"
+            "现金头寸的快速修复为后续资本开支提供了缓冲。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Pilgangoora", "Ngungaju", "Colina", "P2000"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["earnings", "production"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-04-08-lithium-q1-review",
+        "title": "Lithium Market Update: Q1 2026 in Review",
+        "url": "https://investingnews.com/lithium-forecast-q1-2026/",
+        "source": "Investing News Network",
+        "published_at": "2026-04-08T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "2026 年一季度锂价近乎翻倍：锂辉石自约 US$600/t 升至 US$2,000 以上，5 月一度触及近三年高位约 US$3,000/t；电池级碳酸锂同期上涨约 95%。主因包括中国江西矿权整顿、宁德时代枧下窝停产（约占全球 6% 供应）、津巴布韦 2026-02-25 全面禁止锂精矿出口，以及储能（BESS）需求超预期。",
+        "body": (
+            "INN 的一季度回顾指出，2026 年 Q1 锂价近乎翻倍：锂辉石精矿从约 US$600/吨升至 US$2,000/吨以上，"
+            "5 月一度触及近三年高位约 US$3,000/吨；电池级碳酸锂同期上涨约 95%。"
+            "报告把上行归因于四个供给/需求同时发力的因素：中国江西矿权整顿导致部分锂云母产能关停；"
+            "宁德时代枧下窝矿停产（约占全球 6% 供应）；津巴布韦自 2026 年 2 月 25 日起全面禁止锂精矿出口；"
+            "以及储能（BESS）装机需求超出市场预期。供给弹性受限叠加需求侧超预期，是这一轮涨幅远超共识的原因。"
+        ),
+        "entities": {
+            "companies": [],
+            "projects": ["Jianxiawo"],
+            "tickers": [],
+        },
+        "commodities": ["lithium"],
+        "regions": ["CN", "ZW", "GLOBAL"],
+        "topics": ["price", "supply", "policy", "demand"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-03-25-au-eu-trade-deal",
+        "title": "EU trade deal unlocks critical minerals boost",
+        "url": "https://www.australianmining.com.au/eu-trade-deal-unlocks-critical-minerals-boost/",
+        "source": "Australian Mining",
+        "published_at": "2026-03-25T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "澳欧自贸协定（历经八年谈判于 2026 年 3 月达成）永久取消包括氢氧化锂在内的关键矿产出口关税（此前最高约 5.5%），并提高欧盟私人投资者的外资审查门槛。对 PLS 等澳锂生产商属需求侧利好，但澳锂仍有约 97% 流向中国、约 95% 在中国精炼，结构性依赖未解。",
+        "body": (
+            "澳大利亚与欧盟在历经八年谈判后于 2026 年 3 月达成自由贸易协定，"
+            "永久取消包括氢氧化锂在内的关键矿产出口关税（此前税率最高约 5.5%），"
+            "同时提高欧盟私人投资者触发外资审查的门槛，为澳矿吸引欧洲资本降低了摩擦。"
+            "对 PLS 这类澳洲锂生产商而言这是需求侧的边际利好。"
+            "【风险提示】报道同时指出，澳洲锂产品仍有约 97% 流向中国、约 95% 在中国完成精炼，"
+            "这份协定并未改变中澳之间结构性依赖的格局，短期实际订单增量有限。"
+        ),
+        "entities": {
+            "companies": [],
+            "projects": [],
+            "tickers": [],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU", "EU", "CN"],
+        "topics": ["policy", "trade", "demand"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-02-19-ngungaju-restart",
+        "title": "PLS Earnings: Ngungaju Plant Given the Green Light to Restart",
+        "url": "https://www.morningstar.com/company-reports/1432180-pls-earnings-ngungaju-plant-given-the-green-light-to-restart",
+        "source": "Morningstar",
+        "published_at": "2026-02-19T12:18:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS 批准重启此前停产的 Ngungaju 选厂（约 20 万吨/年产能），计划 2026 年 7 月初复产。Ngungaju 于 2024 年底因供给过剩与低锂价进入维护状态，上次满产（FY24）产量超 26.6 万吨。重启将推高下半年单位成本，或逼近 A$560–600/t 指引上沿。",
+        "body": (
+            "Morningstar 报道，PLS 已批准重启此前进入维护状态的 Ngungaju 选厂，"
+            "该厂年产能约 20 万吨，计划于 2026 年 7 月初恢复生产。"
+            "Ngungaju 在 2024 年底因锂价低迷与供给过剩而停产，上一次满产（FY24）产量超过 26.6 万吨。"
+            "【风险提示】研报提示重启会推高下半年的单位成本，可能逼近 A$560–600/吨的指引上沿，"
+            "在锂价回落的情形下会直接压缩毛利空间。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Ngungaju", "Pilgangoora"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["production", "cost"],
+        "sentiment": "neutral",
+    },
+    {
+        "id": "news-2026-02-19-pls-h1-profit-miningcom",
+        "title": "PLS to restart Western Australia plant, swings to first-half profit",
+        "url": "https://www.mining.com/web/pls-swings-to-profit-to-restart-western-australia-plant/",
+        "source": "MINING.COM",
+        "published_at": "2026-02-19T01:55:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS 录得 H1 FY26 净利润 A$3,300 万（上年同期亏损 A$6,900 万），H1 营收 +47% 至 A$6.24 亿（均价 +40%、销量 +7%），并批准 Ngungaju 于 2026 年 7 月复产。消息推动股价上涨逾 3% 至两周高位 A$4.56。公司未派中期股息，称优先保持财务弹性。",
+        "body": (
+            "MINING.COM 报道，PLS 在 H1 FY26 实现净利润 A$3,300 万，相较上年同期 A$6,900 万的亏损实现扭亏；"
+            "半年营收同比增长 47% 至 A$6.24 亿，其中实现均价上涨 40%、销量增长 7%。"
+            "公司同期批准 Ngungaju 选厂于 2026 年 7 月复产。消息公布后股价上涨逾 3%，"
+            "触及两周高位 A$4.56。公司未派发中期股息，表示优先保持财务弹性以支撑扩产资本开支。"
+        ),
+        "entities": {
+            "companies": ["PLS Group", "Pilbara Minerals"],
+            "projects": ["Ngungaju", "Pilgangoora"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["earnings", "production"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-02-09-canmax-offtake",
+        "title": "PLS locks in new Canmax spodumene offtake agreement",
+        "url": "https://www.australianmining.com.au/pls-locks-in-new-canmax-spodumene-offtake-agreement/",
+        "source": "Australian Mining",
+        "published_at": "2026-02-09T22:52:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS 与中国天宜锂业母公司 Canmax（天华新能）签署两年期有约束力承购协议：每年最多 15 万吨锂辉石精矿（可再延长 12 个月），含 SC6 US$1,000/t 的下行保护底价，并有 1 亿美元免息预付款。货源可来自 Pilgan 或 Ngungaju 厂。",
+        "body": (
+            "PLS 宣布与中国天宜锂业母公司 Canmax（天华新能）签署为期两年的有约束力承购协议，"
+            "每年供应最多 15 万吨锂辉石精矿，并可再延长 12 个月。"
+            "协议的关键条款包括：SC6 基准下 US$1,000/吨的下行保护底价，以及 1 亿美元的免息预付款。"
+            "货源可来自 Pilgan 或 Ngungaju 选厂。这种「底价 + 预付款」的结构在锂价波动期对卖方尤其有价值，"
+            "它把价格下行风险部分转移给了买方，同时改善上游现金流。"
+        ),
+        "entities": {
+            "companies": ["PLS Group", "Canmax", "天华新能", "天宜锂业"],
+            "projects": ["Pilgan", "Ngungaju"],
+            "tickers": ["ASX:PLS", "SZ:300390"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU", "CN"],
+        "topics": ["offtake", "contract"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2026-01-30-pls-december-quarter",
+        "title": "PLS Group books 49% revenue leap and strong cash flow in December quarter earnings",
+        "url": "https://www.fool.com.au/2026/01/30/pls-group-books-49-revenue-leap-and-strong-cash-flow-in-december-quarter-earnings/",
+        "source": "The Motley Fool Australia",
+        "published_at": "2026-01-30T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "12 月季度（FY26 Q2）营收 +49% 至 A$3.73 亿；产量 20.8 万吨（环比 -7%），销量 23.2 万吨（+8%）；实现均价 US$1,161/t（+57%），按 SC6 CIF 计约 US$1,336/t（+59%）。现金毛利 A$1.66 亿（上季仅 A$800 万），期末现金 A$9.54 亿，为数个季度以来首次现金净增。",
+        "body": (
+            "PLS 披露 12 月季度（FY26 Q2）业绩：营收环比增长 49% 至 A$3.73 亿；"
+            "产量 20.8 万吨（环比 -7%），销量 23.2 万吨（环比 +8%）；"
+            "实现均价 US$1,161/吨（同比 +57%），按 SC6 CIF 口径折算约 US$1,336/吨（+59%）。"
+            "现金毛利从上季度的 A$800 万跃升至 A$1.66 亿，期末现金余额 A$9.54 亿，"
+            "为数个季度以来首次实现现金净增。这是本轮锂价反转在财务报表上的第一个明确拐点。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["earnings", "price"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2025-11-25-p1000-optimisation",
+        "title": "PLS powers ahead at Pilgangoora",
+        "url": "https://www.australianmining.com.au/pls-powers-ahead-at-pilgangoora/",
+        "source": "Australian Mining",
+        "published_at": "2025-11-25T23:21:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS 在 P1000 扩产完成后转入优化阶段，Pilgangoora 名义产能约 100 万吨/年（含 Pilgan 与 Ngungaju）。工作重点转向降本增效与 P850 运营模式，视锂价条件推进 P2000 可行性研究。",
+        "body": (
+            "报道称 PLS 在完成 P1000 扩产项目后进入优化阶段，Pilgangoora 项目名义产能已达约 100 万吨/年，"
+            "涵盖 Pilgan 与 Ngungaju 两个选厂。运营重点从扩产能转向降本增效，"
+            "推行所谓 P850 运营模式以提高设备利用率，并根据锂价条件决定 P2000 可行性研究的推进节奏。"
+            "这一「先修复现金流、再谈扩产」的次序，反映了 2025 年低锂价环境下澳矿普遍的资本纪律。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Pilgangoora", "P1000", "P2000", "P850"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["production", "expansion", "cost"],
+        "sentiment": "neutral",
+    },
+    {
+        "id": "news-2025-10-27-pls-cuts-costs",
+        "title": "PLS cuts costs and boosts output at Pilgangoora",
+        "url": "https://www.australianmining.com.au/pls-cuts-costs-and-boosts-output-at-pilgangoora/",
+        "source": "Australian Mining",
+        "published_at": "2025-10-27T01:12:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "针对 2025 年 9 月季度（FY26 Q1）季报的报道：产量 22.48 万吨（环比 +2%），锂回收率提升至 78.2%（上季 71.6%，为 P1000 投产后最佳），FOB 单位成本降至 A$540/t（-11%）。公司维持 FY26 单位成本指引 A$620–640/t。",
+        "body": (
+            "针对 PLS 2025 年 9 月季度（FY26 Q1）季报的报道显示：当季产量 22.48 万吨（环比 +2%），"
+            "锂回收率提升至 78.2%（上季度为 71.6%），是 P1000 项目投产以来的最佳水平；"
+            "FOB 单位成本下降 11% 至 A$540/吨。公司维持 FY26 全年单位成本指引在 A$620–640/吨。"
+            "回收率与单位成本同时改善，说明 P1000 的产能爬坡已进入良性阶段。"
+        ),
+        "entities": {
+            "companies": ["PLS Group"],
+            "projects": ["Pilgangoora", "P1000"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["production", "cost"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2025-10-24-pls-revenue-surge",
+        "title": "Pilbara Minerals shares jump on 30% revenue surge",
+        "url": "https://www.fool.com.au/2025/10/24/pilbara-minerals-shares-jump-on-30-revenue-surge/",
+        "source": "The Motley Fool Australia",
+        "published_at": "2025-10-24T00:00:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "9 月季度营收 +30% 至 A$2.51 亿，实现价格 US$742/t（SC5.3，CIF 中国；+24%），折 SC6 约 US$841/t（+20%）。期末现金 A$8.52 亿，另有未提取的 US$6.25 亿信贷额度。市场解读为锂周期触底回升的信号，股价大涨。",
+        "body": (
+            "PLS 公布 9 月季度业绩后股价大涨：当季营收同比增长 30% 至 A$2.51 亿，"
+            "实现价格 US$742/吨（SC5.3、CIF 中国口径，同比 +24%），折算 SC6 约 US$841/吨（+20%）。"
+            "期末现金 A$8.52 亿，另有 US$6.25 亿未提取的信贷额度可用。"
+            "市场把价格上涨与股价反应解读为锂周期触底回升的早期信号。"
+        ),
+        "entities": {
+            "companies": ["Pilbara Minerals"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["ASX:PLS"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU"],
+        "topics": ["earnings", "price"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2025-10-23-posco-jv-ira",
+        "title": "Investors PLS'd but POSCO JV hits Trump's EV roadblock",
+        "url": "https://www.countryman.com.au/business/mining/donald-trumps-tariffs-loss-of-inflation-reduction-act-incentives-pulls-handbrake-on-pls-posco-jv-c-20453356",
+        "source": "The Countryman",
+        "published_at": "2025-10-23T23:43:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "PLS 与 POSCO 的韩国锂盐合资公司（PPLS）受美国政策冲击：2025-09-30 美国 IRA 补贴终止、北美关税，以及 2026 年美国 EV 电池/化学品远期订单减少，迫使 JV 削减产能、采用间歇批次生产以保现金，并评估短期停产。储能（BESS）需求增长部分对冲。",
+        "body": (
+            "报道称 PLS 与 POSCO 在韩国光阳的锂盐合资公司 PPLS 正承受美国政策转向的压力："
+            "美国 IRA（通胀削减法案）相关补贴于 2025 年 9 月 30 日终止，叠加北美关税，"
+            "以及 2026 年美国电动车电池与化学品远期订单减少，合资公司被迫削减产能、"
+            "改用间歇批次生产以保存现金，并评估短期停产的可能性。"
+            "【风险提示】下游锂盐端的承压会通过承购量传导回上游精矿需求，"
+            "储能（BESS）需求的增长只能部分对冲这一缺口。"
+        ),
+        "entities": {
+            "companies": ["PLS Group", "POSCO", "PPLS"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["ASX:PLS", "KRX:005490"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU", "KR", "US"],
+        "topics": ["policy", "downstream", "risk"],
+        "sentiment": "negative",
+    },
+    {
+        "id": "news-2025-10-14-australia-critical-minerals-reserve",
+        "title": "Australia Moves to Establish Strategic Critical Minerals Reserve as Global Trade Tensions Rise",
+        "url": "https://smallcaps.com.au/article/australia-establish-strategic-critical-minerals-reserve-global-trade-tensions-rise",
+        "source": "Small Caps",
+        "published_at": "2025-10-14T19:12:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "澳大利亚加速设立约 A$12 亿（US$7.82 亿）战略关键矿产储备，预计 2026 年下半年投入运作。特点是以「前瞻性生产协议」而非实物囤货为主（更像金融工具），并可能向美、日、韩、英等盟友出售份额。属澳洲关键矿产政策，间接影响锂需求与定价预期。",
+        "body": (
+            "澳大利亚正加速设立规模约 A$12 亿（约 US$7.82 亿）的战略关键矿产储备，"
+            "预计于 2026 年下半年开始运作。与传统的实物囤货不同，该储备以「前瞻性生产协议」为主要工具，"
+            "形式更接近金融合约，并可能向美国、日本、韩国、英国等盟友出售份额。"
+            "这一安排属于澳洲 Critical Minerals Strategy 框架下的政策工具，"
+            "对锂等关键矿产的需求与定价预期构成中长期影响。"
+        ),
+        "entities": {
+            "companies": [],
+            "projects": [],
+            "tickers": [],
+        },
+        "commodities": ["lithium", "rare_earth", "critical_minerals"],
+        "regions": ["AU"],
+        "topics": ["policy", "supply", "demand"],
+        "sentiment": "positive",
+    },
+    {
+        "id": "news-2024-01-15-ganfeng-offtake-expansion",
+        "title": "Pilbara Minerals expands offtake deal with Ganfeng",
+        "url": "https://www.mining.com/pilbara-minerals-expands-offtake-deal-with-ganfeng/",
+        "source": "MINING.COM",
+        "published_at": "2024-01-15T13:29:00Z",
+        "source_verified": "http_200",
+        "summary_zh": "作为下游承购背景条目：PLS 扩大与赣锋锂业的三年期销售合同，增加向赣锋出售的锂辉石精矿吨位，并保留进一步增量选择权。注意本条目发布日期较早（2024-01），非近期新闻，仅作为「赣锋承购」主题的历史锚点。",
+        "body": (
+            "背景条目：PLS 扩大了与赣锋锂业的三年期销售合同，增加向赣锋出售的锂辉石精矿吨位，"
+            "并保留进一步增加供货量的选择权。这是中澳锂产业链上游—下游绑定的典型案例。"
+            "本条目的发布时间为 2024 年 1 月，明显早于其余条目，"
+            "在检索结果中会因时间衰减而被降权，保留它主要是为了给「赣锋承购」这一主题提供历史锚点。"
+        ),
+        "entities": {
+            "companies": ["Pilbara Minerals", "赣锋锂业"],
+            "projects": ["Pilgangoora"],
+            "tickers": ["ASX:PLS", "SZ:002460"],
+        },
+        "commodities": ["lithium"],
+        "regions": ["AU", "CN"],
+        "topics": ["offtake", "contract"],
+        "sentiment": "neutral",
+    },
+]
+
+META = {
+    "_meta": {
+        "dataset": "矿权日报 Agent 新闻 fixture",
+        "generated_by": "scripts/build_news_fixtures.py",
+        "real_fields": ["title", "url", "source", "published_at", "source_verified"],
+        "rewritten_fields": ["summary_zh", "body"],
+        "note": (
+            "title / url / source / published_at 为真实检索结果（详见 "
+            "data/_sources/news_research_2026-10-14.md）；summary_zh 与 body 是对公开报道事实的"
+            "中文改写，**不是原文转载**。source_verified=http_200 表示本机实测该 URL 返回 200 "
+            "并提取到真实标题与时间；search_only 表示来源真实但被反站反爬拦截、未能实测。"
+        ),
+        "count": len(NEWS),
+    }
+}
+
+
+def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    path = OUT_DIR / "news.json"
+    payload = {**META, "items": NEWS}
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    verified = sum(1 for n in NEWS if n["source_verified"] == "http_200")
+    domains = sorted({n["url"].split("/")[2] for n in NEWS})
+    print(f"items      : {len(NEWS)}")
+    print(f"http_200   : {verified}   search_only: {len(NEWS) - verified}")
+    print(f"domains    : {len(domains)} -> {', '.join(domains[:6])} ...")
+    print(f"date range : {min(n['published_at'] for n in NEWS)[:10]} .. {max(n['published_at'] for n in NEWS)[:10]}")
+    print(f"written    : {path} ({path.stat().st_size} B)")
+
+
+if __name__ == "__main__":
+    main()

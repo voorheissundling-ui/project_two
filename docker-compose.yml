@@ -1,0 +1,35 @@
+# 一条命令跑通：`docker compose up --build`
+#
+# 只有两个 service，因为这份工程只有两件事要做：
+#   1. `agent`  —— 出那份 Markdown 简报（默认目标）
+#   2. `smoke`  —— 对三个 MCP server 走一遍真实 stdio 协议自检
+#
+# 两者共用同一个镜像，区别只在 command。这是有意的：
+# 「能出简报」和「server 协议层没坏」是两件独立的事，
+# 后者失败时前者可能仍然"看起来"正常（比如某个 server 静默降级）。
+services:
+  agent:
+    build: .
+    image: mining-daily:0.1.0
+    # 不配 key 也能跑：会自动回落到本地规划 + 模板草稿，数字口径完全一致。
+    # 想启用真实生成就取消下面两行注释并填 key。
+    # environment:
+    #   MINING_DAILY_DEEPSEEK_API_KEY: ${MINING_DAILY_DEEPSEEK_API_KEY}
+    environment:
+      MINING_DAILY_MODE: fixture
+      MINING_DAILY_LLM_PROVIDER: ${MINING_DAILY_LLM_PROVIDER:-deepseek}
+      MINING_DAILY_DEEPSEEK_API_KEY: ${MINING_DAILY_DEEPSEEK_API_KEY:-}
+    # 落到挂载卷而不是 stdout：容器退出后简报还在宿主机上，方便直接打开看
+    command: ["给我生成一份关于 Pilbara 锂矿的今日简报", "-o", "/app/out/brief.md"]
+    volumes:
+      - ./out:/app/out
+
+  smoke:
+    build: .
+    image: mining-daily:0.1.0
+    profiles: ["test"] # 只在 `docker compose --profile test up smoke` 时启动
+    environment:
+      MINING_DAILY_MODE: fixture
+      MINING_DAILY_LOG_LEVEL: CRITICAL
+    entrypoint: ["python"]
+    command: ["scripts/smoke_servers.py"]

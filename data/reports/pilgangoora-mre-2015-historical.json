@@ -1,0 +1,60 @@
+{
+  "report_id": "pilgangoora-mre-2015-historical",
+  "company": "Pilbara Minerals Limited",
+  "ticker": "ASX:PLS",
+  "project": "Pilgangoora (historical 2015 estimate)",
+  "commodity": "tantalum,lithium",
+  "reporting_standard": "JORC 2012",
+  "title": "Historical Mineral Resource Estimate as at June 2015",
+  "effective_date": "2015-06-30",
+  "published_date": "2015-06-02",
+  "source_url": "http://pilbaraminerals.com.au/sites/pilbaraminerals.com.au/files/beerandco-research-report20151006.pdf",
+  "data_origin": "reconstructed_from_public_disclosure",
+  "note": "含 Ta2O5（Mlb）与 Li2O（t）双金属混合单位，专门用来压测解析器的单位归一。",
+  "fixtures": {
+    "pdf": "data/reports/pdfs/pilgangoora_mre_2015_historical.pdf",
+    "pdf_url_alias": "fixture://pilgangoora-mre-2015-historical"
+  },
+  "ground_truth": {
+    "description": "本题只对 Indicated Resources 与 Inferred Resources 两类的矿石量 / 品位 / 金属量计分；Measured、(M)+(I)、Total 行不计分。",
+    "tolerance": "±5%（相对误差）",
+    "rows": [
+      {
+        "category": "Indicated",
+        "commodity": "tantalum",
+        "ore_tonnage": {
+          "value": 6.0,
+          "unit": "Mt",
+          "value_mt": 6.0
+        },
+        "grade": {
+          "value": 233,
+          "unit": "ppm Ta2O5"
+        },
+        "contained_metal": {
+          "value": 3.1,
+          "unit": "Mlb Ta2O5",
+          "value_t": 1406.14
+        }
+      },
+      {
+        "category": "Inferred",
+        "commodity": "tantalum",
+        "ore_tonnage": {
+          "value": 17.8,
+          "unit": "Mt",
+          "value_mt": 17.8
+        },
+        "grade": {
+          "value": 208,
+          "unit": "ppm Ta2O5"
+        },
+        "contained_metal": {
+          "value": 8.2,
+          "unit": "Mlb Ta2O5",
+          "value_t": 3719.46
+        }
+      }
+    ]
+  }
+}
